@@ -109,7 +109,7 @@ class Poets_Configuration {
 		add_action( 'wp_before_admin_bar_render', [ $this, 'admin_bar_buddypress' ], 1000 );
 
 		// Remove BuddyPress Member Search.
-		add_filter( 'bp_search_form_type_select_options', [ $this, 'search_form_options' ], 10, 1 );
+		add_filter( 'bp_search_form_type_select_options', [ $this, 'search_form_options' ], 40, 1 );
 
 		// Add link to password recovery page.
 		add_action( 'bp_login_widget_form', [ $this, 'login_password_link' ], 20 );

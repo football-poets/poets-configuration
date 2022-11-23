@@ -239,9 +239,24 @@ class Poets_Configuration {
 	 */
 	public function search_form_options( $options ) {
 
+		// Allow all when logged in.
+		if ( is_user_logged_in() ) {
+			return $options;
+		}
+
 		// Do we have Members?
 		if ( array_key_exists( 'members', $options ) ) {
 			unset( $options['members'] );
+		}
+
+		// Do we have Groups?
+		if ( array_key_exists( 'groups', $options ) ) {
+			unset( $options['groups'] );
+		}
+
+		// Do we have Blogs?
+		if ( array_key_exists( 'blogs', $options ) ) {
+			unset( $options['blogs'] );
 		}
 
 		// --<

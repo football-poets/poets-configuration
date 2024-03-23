@@ -325,6 +325,11 @@ class Poets_Configuration {
 		}
 		*/
 
+		// Bail if no hidden input.
+		if ( empty( $_REQUEST['fp-current-page'] ) ) {
+			return $redirect_to;
+		}
+
 		// Is our hidden input set?
 		if ( ! empty( wp_unslash( $_REQUEST['fp-current-page'] ) ) ) {
 			$redirect_to = wp_unslash( $_REQUEST['fp-current-page'] );

@@ -501,6 +501,8 @@ class Poets_Configuration {
 		$placeholder->ID = 0;
 		$placeholder->comment_count = 0;
 		$placeholder->post_parent = 0;
+		$placeholder->target = '';
+		$placeholder->xfn = '';
 
 		// Add title and link to "Add Poem".
 		$placeholder->post_title = __( 'Publish a Poem', 'poets-configuration' );

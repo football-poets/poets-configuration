@@ -1,11 +1,13 @@
 <?php
 /**
+ * Football Poets Configuration
+ *
  * Plugin Name: Football Poets Configuration
- * Plugin URI: http://footballpoets.org
  * Description: Configures the Football Poets site.
- * Author: Christian Wach
- * Version: 0.2.2
- * Author URI: https://haystack.co.uk
+ * Plugin URI:  https://github.com/football-poets/poets-configuration
+ * Version:     0.2.2
+ * Author:      Christian Wach
+ * Author URI:  https://haystack.co.uk
  * Text Domain: poets-configuration
  * Domain Path: /languages
  *
@@ -215,14 +217,14 @@ class Poets_Configuration {
 
 		// Target BuddyPress dropdown parent.
 		$args = [
-			'id' => 'my-account',
+			'id'   => 'my-account',
 			'href' => trailingslashit( bp_loggedin_user_domain() ),
 		];
 		$wp_admin_bar->add_node( $args );
 
 		// Target BuddyPress dropdown User Info.
 		$args = [
-			'id' => 'user-info',
+			'id'   => 'user-info',
 			'href' => trailingslashit( bp_loggedin_user_domain() ),
 		];
 		$wp_admin_bar->add_node( $args );
@@ -276,7 +278,7 @@ class Poets_Configuration {
 
 		// Add link to password recovery page.
 		echo '<span class="bp-login-widget-password-link">';
-		echo '<a href="' . $url . '">' . __( 'Lost Password?', 'poets-configuration' ) . '</a>';
+		echo '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Lost Password?', 'poets-configuration' ) . '</a>';
 		echo '</span>';
 
 	}
@@ -292,7 +294,11 @@ class Poets_Configuration {
 		$url = esc_attr( home_url( add_query_arg( null, null ) ) );
 
 		// Add hidden input with value of current page URL.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<input type="hidden" name="fp-current-page" id="fp-current-page" value="' . $url . '" />' . "\n\n";
+
+		// Add a nonce field.
+		wp_nonce_field( 'fp_current_page_action', 'fp_current_page_nonce' );
 
 	}
 
@@ -330,10 +336,11 @@ class Poets_Configuration {
 			return $redirect_to;
 		}
 
-		// Is our hidden input set?
-		if ( ! empty( wp_unslash( $_REQUEST['fp-current-page'] ) ) ) {
-			$redirect_to = wp_unslash( $_REQUEST['fp-current-page'] );
-		}
+		// Do we trust the source of the data?
+		check_admin_referer( 'fp_current_page_action', 'fp_current_page_nonce' );
+
+		// Get the value of the hidden input.
+		$redirect_to = sanitize_text_field( wp_unslash( $_REQUEST['fp-current-page'] ) );
 
 		// Return to request URL.
 		return $redirect_to;
@@ -386,9 +393,9 @@ class Poets_Configuration {
 
 					// Add "Publish a Poem" for those who don't have one.
 					$args = [
-						'id' => 'fp-poem-new',
-						'title' => __( 'Publish a Poem', 'poets-configuration' ),
-						'href' => trailingslashit( bp_loggedin_user_domain() . $parent_tab . '/poems-create' ),
+						'id'     => 'fp-poem-new',
+						'title'  => __( 'Publish a Poem', 'poets-configuration' ),
+						'href'   => trailingslashit( bp_loggedin_user_domain() . $parent_tab . '/poems-create' ),
 						'parent' => 'top-secondary',
 					];
 					$wp_admin_bar->add_node( $args );
@@ -397,9 +404,9 @@ class Poets_Configuration {
 
 					// Add "Create Poet Profile" for those who don't have one.
 					$args = [
-						'id' => 'fp-primary',
-						'title' => __( 'Create Your Poet Profile', 'poets-configuration' ),
-						'href' => trailingslashit( bp_loggedin_user_domain() . buddypress()->profile->slug . '/edit/group/2' ),
+						'id'     => 'fp-primary',
+						'title'  => __( 'Create Your Poet Profile', 'poets-configuration' ),
+						'href'   => trailingslashit( bp_loggedin_user_domain() . buddypress()->profile->slug . '/edit/group/2' ),
 						'parent' => 'top-secondary',
 					];
 					$wp_admin_bar->add_node( $args );
@@ -438,9 +445,9 @@ class Poets_Configuration {
 	 *
 	 * @since 0.1.3
 	 *
-	 * @param array $items The array of menu items.
+	 * @param array  $items The array of menu items.
 	 * @param object $menu The WordPress menu object.
-	 * @param array $args The additional arguments.
+	 * @param array  $args The additional arguments.
 	 * @return array $items The modified array of menu items.
 	 */
 	public function menu_add_items( $items, $menu, $args ) {
@@ -456,7 +463,7 @@ class Poets_Configuration {
 		}
 
 		// Bail if not main menu.
-		if ( 'main-menu' != $menu->slug ) {
+		if ( 'main-menu' !== $menu->slug ) {
 			return $items;
 		}
 
@@ -492,22 +499,22 @@ class Poets_Configuration {
 		$placeholder->menu_item_parent = 132;
 
 		// Add enough properties to satify WordPress and CommentPress.
-		$placeholder->menu_order = count( $items ) + 1;
-		$placeholder->classes = [ '' ];
-		$placeholder->type = 'custom';
-		$placeholder->object = 'custom';
-		$placeholder->object_id = 0;
-		$placeholder->db_id = 0;
-		$placeholder->ID = 0;
+		$placeholder->menu_order    = count( $items ) + 1;
+		$placeholder->classes       = [ '' ];
+		$placeholder->type          = 'custom';
+		$placeholder->object        = 'custom';
+		$placeholder->object_id     = 0;
+		$placeholder->db_id         = 0;
+		$placeholder->ID            = 0;
 		$placeholder->comment_count = 0;
-		$placeholder->post_parent = 0;
-		$placeholder->target = '';
-		$placeholder->xfn = '';
+		$placeholder->post_parent   = 0;
+		$placeholder->target        = '';
+		$placeholder->xfn           = '';
 
 		// Add title and link to "Add Poem".
 		$placeholder->post_title = __( 'Publish a Poem', 'poets-configuration' );
-		$placeholder->title = $placeholder->post_title;
-		$placeholder->url = trailingslashit( bp_loggedin_user_domain() . $parent_tab . '/poems-create' );
+		$placeholder->title      = $placeholder->post_title;
+		$placeholder->url        = trailingslashit( bp_loggedin_user_domain() . $parent_tab . '/poems-create' );
 
 		// Add to menu.
 		$items[] = $placeholder;
@@ -578,7 +585,7 @@ class Poets_Configuration {
 	 * @since 0.2
 	 *
 	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
-	 * @param str $type The type of menu item we're looking for.
+	 * @param str   $type The type of menu item we're looking for.
 	 * @param array $url_snippet The slug we're looking for in the menu item's target URL.
 	 */
 	private function remove_item( &$sorted_menu_items, $type, $url_snippet ) {
@@ -587,7 +594,7 @@ class Poets_Configuration {
 		foreach ( $sorted_menu_items as $key => $item ) {
 
 			// Is it the item we're looking for?
-			if ( $item->type == $type && false !== strpos( $item->url, $url_snippet ) ) {
+			if ( $item->type === $type && false !== strpos( $item->url, $url_snippet ) ) {
 
 				// Store found key.
 				$found = $key;

@@ -24,10 +24,6 @@
 		<exclude name="Squiz.Commenting.BlockComment.HasEmptyLineBefore" />
 		<exclude name="Squiz.PHP.CommentedOutCode.Found" />
 
-		<!-- Pledgeball API oddities -->
-		<exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase" />
-		<exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase" />
-
 	</rule>
 
 	<rule ref="WordPress.WP.I18n">

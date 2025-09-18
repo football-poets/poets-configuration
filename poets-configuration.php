@@ -5,7 +5,7 @@
  * Plugin Name: Football Poets Configuration
  * Description: Configures the Football Poets site.
  * Plugin URI:  https://github.com/football-poets/poets-configuration
- * Version:     1.2.3
+ * Version:     1.2.4a
  * Author:      Christian Wach
  * Author URI:  https://haystack.co.uk
  * Text Domain: poets-configuration
@@ -18,7 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Set our version here.
-define( 'POETS_CONFIGURATION_VERSION', '1.2.3' );
+define( 'POETS_CONFIGURATION_VERSION', '1.2.4a' );
 
 // Store reference to this file.
 if ( ! defined( 'POETS_CONFIGURATION_FILE' ) ) {

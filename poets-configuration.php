@@ -51,44 +51,48 @@ class Poets_Configuration {
 	 */
 	public function __construct() {
 
-		// Include files.
-		$this->include_files();
+		// Initialise when all plugins are loaded.
+		add_action( 'plugins_loaded', [ $this, 'initialise' ], 1 );
 
-		// Setup globals.
-		$this->setup_globals();
+	}
 
-		// Register hooks.
+	/**
+	 * Initialises this plugin.
+	 *
+	 * @since 0.2.3
+	 */
+	public function initialise() {
+
+		// Only do this once.
+		static $done;
+		if ( isset( $done ) && true === $done ) {
+			return;
+		}
+
+		// Bootstrap plugin.
 		$this->register_hooks();
 
-	}
+		/**
+		 * Broadcast that this plugin is now loaded.
+		 *
+		 * @since 0.2.3
+		 */
+		do_action( 'poets_configuration/loaded' );
 
-	/**
-	 * Include files.
-	 *
-	 * @since 0.1
-	 */
-	public function include_files() {
-
-	}
-
-	/**
-	 * Set up objects.
-	 *
-	 * @since 0.1
-	 */
-	public function setup_globals() {
+		// We're done.
+		$done = true;
 
 	}
 
 	/**
-	 * Register WordPress hooks.
+	 * Register hook callbacks.
 	 *
 	 * @since 0.1
 	 */
-	public function register_hooks() {
+	private function register_hooks() {
 
 		// Always use translation.
-		add_action( 'plugins_loaded', [ $this, 'translation' ] );
+		add_action( 'init', [ $this, 'translation' ] );
 
 		/*
 		// Grant 'edit_theme_options' capability to editor role.
@@ -122,8 +126,8 @@ class Poets_Configuration {
 		// Redirect to calling page after login.
 		add_filter( 'login_redirect', [ $this, 'login_redirect' ], 20, 3 );
 
-		// Tweak the admin bar for standard Users.
-		add_action( 'wp_before_admin_bar_render', [ $this, 'admin_bar_tweaks' ], 1000 );
+		// Tweak the admin bar for standard Users in WordPress 6.6+.
+		add_action( 'admin_bar_menu', [ $this, 'admin_bar_tweaks' ], 4 );
 
 		// Add items to main menu.
 		add_filter( 'wp_get_nav_menu_items', [ $this, 'menu_add_items' ], 10, 3 );
@@ -150,24 +154,6 @@ class Poets_Configuration {
 			false, // Deprecated argument.
 			dirname( plugin_basename( POETS_CONFIGURATION_FILE ) ) . '/languages/'
 		);
-
-	}
-
-	/**
-	 * Perform plugin activation tasks.
-	 *
-	 * @since 0.1
-	 */
-	public function activate() {
-
-	}
-
-	/**
-	 * Perform plugin deactivation tasks.
-	 *
-	 * @since 0.1
-	 */
-	public function deactivate() {
 
 	}
 
@@ -359,16 +345,18 @@ class Poets_Configuration {
 	 * - Publish a poem for those with a Primary Poet Profile.
 	 *
 	 * @since 0.1
+	 *
+	 * @param WP_Admin_Bar $wp_admin_bar The WordPress Admin Bar object.
 	 */
-	public function admin_bar_tweaks() {
+	public function admin_bar_tweaks( $wp_admin_bar ) {
 
 		// Bail if not logged in.
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
-		// Access admin bar and BuddyForms.
-		global $wp_admin_bar, $buddyforms;
+		// Access BuddyForms.
+		global $buddyforms;
 
 		// Don't show in WordPress admin.
 		if ( ! is_admin() ) {
@@ -663,19 +651,22 @@ class Poets_Configuration {
  *
  * @since 0.1
  *
- * @return obj $poets_configuration The plugin object.
+ * @return Poets_Configuration $plugin The plugin object.
  */
 function poets_configuration() {
-	global $poets_configuration;
-	return $poets_configuration;
+
+	// Store instance in static variable.
+	static $plugin = false;
+
+	// Maybe return instance.
+	if ( false === $plugin ) {
+		$plugin = new Poets_Configuration();
+	}
+
+	// --<
+	return $plugin;
+
 }
 
-// Instantiate the class.
-global $poets_configuration;
-$poets_configuration = new Poets_Configuration();
-
-// Activation.
-register_activation_hook( __FILE__, [ $poets_configuration, 'activate' ] );
-
-// Deactivation.
-register_deactivation_hook( __FILE__, [ $poets_configuration, 'deactivate' ] );
+// Bootstrap plugin immediately.
+poets_configuration();

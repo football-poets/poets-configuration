@@ -635,8 +635,10 @@ class Poets_Configuration {
 		}
 
 		// Bail if this User is not held in moderation.
-		if ( ! bp_registration_get_moderation_status( $user->ID ) ) {
-			return false;
+		if ( function_exists( 'bp_registration_get_moderation_status' ) ) {
+			if ( ! bp_registration_get_moderation_status( $user->ID ) ) {
+				return false;
+			}
 		}
 
 		// --<

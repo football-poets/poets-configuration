@@ -215,6 +215,32 @@ class Poets_Configuration {
 		];
 		$wp_admin_bar->add_node( $args );
 
+		// Allow super admins to see all menu items.
+		if ( is_super_admin() ) {
+			return;
+		}
+
+		// Allow editors to see all.
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return;
+		}
+
+		// Remove the Multisite menu.
+		$wp_admin_bar->remove_menu( 'my-sites' );
+
+		// Remove the "Add New" menu.
+		$wp_admin_bar->remove_menu( 'new-content' );
+
+		// Target BuddyPress dropdown User Info.
+		$args = [
+			'id'   => 'site-name',
+			'href' => trailingslashit( bp_loggedin_user_domain() ),
+		];
+		$wp_admin_bar->add_node( $args );
+
+		// Remove "Dashboard".
+		$wp_admin_bar->remove_node( 'dashboard' );
+
 	}
 
 	/**
@@ -415,7 +441,7 @@ class Poets_Configuration {
 			return;
 		}
 
-		// Remove temporarily.
+		// Remove temporarily, if not already removed.
 		$wp_admin_bar->remove_node( 'my-sites' );
 		$wp_admin_bar->remove_node( 'blog-1' );
 		$wp_admin_bar->remove_node( 'blog-1-d' );
